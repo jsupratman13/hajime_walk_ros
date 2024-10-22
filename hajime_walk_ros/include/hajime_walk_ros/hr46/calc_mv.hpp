@@ -104,8 +104,8 @@ public:
 
   void calc_mv_init(float z3);
   void calc_mv();
-  float calc_mvdata(st_xv_mvdata*, st_xv_data*);
-  void chg_mvtbl(st_xv_mvdata*, st_xv_data*);
+  float calc_mvdata(st_xv_mvdata* x, st_xv_data* a);
+  void chg_mvtbl(st_xv_mvdata* x);
 
   // KineSharedPtr kine_;
   std::shared_ptr<Kine> kine_;

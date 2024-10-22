@@ -37,9 +37,9 @@ constexpr float deg2rad(float x)
 }
 
 template <typename T>
-constexpr T sw2(bool s, T x1, T x2)
+constexpr T sw2(short s, T x1, T x2)
 {
-  return s ? x1 : x2;
+  return s == 1 ? x1 : x2;
 }
 
 // limit x between (y-d) and (y+d)

@@ -14,7 +14,6 @@
  * limitations under the License.
  *
  ********************************************************************/
-
 #include "hr46/sq_start.hpp"
 #include "hr46/var.hpp"
 
@@ -172,7 +171,7 @@ int SqStart::sq_start()
   }
   mode_sq_start_prev_ = mode_sq_start_;
 
-  if ((!flag_md_start_end_) && (mode_sq_time_ <= EPS_TIME))
+  if ((!flag_md_start_end_) && (mode_sq_time_ > EPS_TIME))
   {
     mode_sq_start_++;
   }

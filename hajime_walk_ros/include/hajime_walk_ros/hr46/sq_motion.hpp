@@ -200,7 +200,7 @@ public:
   short flag_motion_gyro_;
 
   void sq_motion_init();
-  int sq_motion();
+  int sq_motion(short flag_face_control);
   void set_motionbuf(st_xp_mv_motion motionbuf[MODE2_MOTION_SIZE], std::ifstream& file);
   void load_pc_motion(std::string directory);
 

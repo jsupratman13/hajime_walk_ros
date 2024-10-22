@@ -142,8 +142,8 @@ void Serv::serv()
   xv_ref_.d[FOOT_ROLL_L] =
       hr46::sw2(sw_.ref_d, kine_->xv_kine_[1].foot_r, xv_ref_.d_ref[FOOT_ROLL_L]);  // left foot (roll)
 
-  xv_ref_.d[LEG_YAW_R] = (xv_ref_.d[LEG_YAW_R] + kine_->xv_posture_.yaw);  // right hip (yaw)
-  xv_ref_.d[LEG_YAW_L] = (xv_ref_.d[LEG_YAW_L] + kine_->xv_posture_.yaw);  // left hip (yaw)
+  xv_ref_.d[LEG_YAW_R] = (xv_ref_.d_ref[LEG_YAW_R] + kine_->xv_posture_.yaw);  // right hip (yaw)
+  xv_ref_.d[LEG_YAW_L] = (xv_ref_.d_ref[LEG_YAW_L] + kine_->xv_posture_.yaw);  // left hip (yaw)
 
   xv_ref_.d[SPARE12] = xv_ref_.d_ref[SPARE12];  // body (pitch)
   xv_ref_.d[SPARE13] = xv_ref_.d_ref[SPARE13];  // body (yaw)

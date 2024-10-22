@@ -41,17 +41,22 @@ Kine::Kine()
   xv_posture_.pitch = 0.0f;  // initialize top half posture
   xv_posture_.yaw = 0.0f;
   xv_posture_.roll2 = 0.0f;
+
+  st_xv_k xv_k_l, xv_k_r;
+  xv_k_ = { { LEG_YAW_L, xv_k_l }, { LEG_YAW_R, xv_k_l } };
+  st_xv_k xv_k2_l, xv_k2_r;
+  xv_k2_ = { { LEG_YAW_L, xv_k2_l }, { LEG_YAW_R, xv_k2_l } };
 }
 
 void Kine::kine()
 {
   /*** right leg : xv_kine[0] ***/
-  xv_kine_[0].yaw = serv_->xv_ref_.d_ref[11];   /* right hip yaw angle */
-  kine_fun(&xv_kine_[0].x, &xv_kine_[0].hip_r); /* calculate right leg */
+  xv_kine_[0].yaw = serv_->xv_ref_.d_ref[11];              /* right hip yaw angle */
+  kine_fun(LEG_YAW_R, &xv_kine_[0].x, &xv_kine_[0].hip_r); /* calculate right leg */
 
   /*** left leg  : xv_kine[1] ***/
-  xv_kine_[1].yaw = serv_->xv_ref_.d_ref[5];    /* left hip yaw angle */
-  kine_fun(&xv_kine_[1].x, &xv_kine_[1].hip_r); /* calculate left leg */
+  xv_kine_[1].yaw = serv_->xv_ref_.d_ref[5];               /* left hip yaw angle */
+  kine_fun(LEG_YAW_L, &xv_kine_[1].x, &xv_kine_[1].hip_r); /* calculate left leg */
 }
 
 // calculation kinematics
@@ -65,8 +70,10 @@ void Kine::kine()
 //   y[1] = hip(pitch)
 //   y[2] = knee2(pitch)
 //   y[3] = knee1(pitch)
-void Kine::kine_fun(float* u, float* y)
+void Kine::kine_fun(int side, float* u, float* y)
 {
+  auto xv_k = xv_k_[side];
+
   float _sinx;
   float _cosx;
   float w1, w2;
@@ -74,23 +81,23 @@ void Kine::kine_fun(float* u, float* y)
   _sinx = std::sin(hr46::deg2rad(*(u + 3)));
   _cosx = std::cos(hr46::deg2rad(*(u + 3)));
 
-  xv_k_.x[3] = (*u) * _cosx + (*(u + 1)) * _sinx;
-  xv_k_.y[3] = -(*u) * _sinx + (*(u + 1)) * _cosx;
-  xv_k_.z[3] = (*(u + 2)) - L3;
-  xv_k_.d[0] = std::asin(xv_k_.y[3] / xv_k_.z[3]);
-  w1 = xv_k_.z[3] * xv_k_.z[3] + xv_k_.y[3] * xv_k_.y[3];
-  w2 = w1 - xv_k_.x[3] * xv_k_.x[3];
+  xv_k.x[3] = (*u) * _cosx + (*(u + 1)) * _sinx;
+  xv_k.y[3] = -(*u) * _sinx + (*(u + 1)) * _cosx;
+  xv_k.z[3] = (*(u + 2)) - L3;
+  xv_k.d[0] = std::asin(xv_k.y[3] / xv_k.z[3]);
+  w1 = xv_k.z[3] * xv_k.z[3] + xv_k.y[3] * xv_k.y[3];
+  w2 = w1 - xv_k.x[3] * xv_k.x[3];
   if (w2 < 0.0f)
   {
     w2 = 0.0f;
   }
-  xv_k_.z[3] = std::sqrt(w2);
-  cal_inv_kine((st_xv_k*)&xv_k_.x);
+  xv_k.z[3] = std::sqrt(w2);
+  cal_inv_kine((st_xv_k*)&xv_k.x);
 
-  (*y) = hr46::rad2deg(xv_k_.d[0]);
-  (*(y + 1)) = hr46::rad2deg(xv_k_.d[1]);
-  (*(y + 2)) = hr46::rad2deg(xv_k_.d[2]);
-  (*(y + 3)) = hr46::rad2deg(xv_k_.d[3]);
+  (*y) = hr46::rad2deg(xv_k.d[0]);
+  (*(y + 1)) = hr46::rad2deg(xv_k.d[1]);
+  (*(y + 2)) = hr46::rad2deg(xv_k.d[2]);
+  (*(y + 3)) = hr46::rad2deg(xv_k.d[3]);
 }
 
 // calculation inverse kinematics
@@ -137,32 +144,34 @@ void Kine::cal_inv_kine(st_xv_k* a)
 /*		xv_kine[0].z									*/
 /*		xv_kine[0].yaw(input)							*/
 /*------------------------------------------------------*/
-void Kine::fwd_kine_fun(float* d, float* x)
+void Kine::fwd_kine_fun(int side, float* d, float* x)
 {
+  auto xv_k2 = xv_k2_[side];
+
   float _sinx;
   float _cosx;
   float x3, y3;
 
-  xv_k2_.d[0] = hr46::deg2rad(*d);
-  xv_k2_.d[1] = hr46::deg2rad(*(d + 1));
-  xv_k2_.d[2] = hr46::deg2rad(*(d + 2));
-  xv_k2_.d[3] = hr46::deg2rad(*(d + 3));
-  xv_k2_.d[4] = hr46::deg2rad(*(d + 4));
+  xv_k2.d[0] = hr46::deg2rad(*d);
+  xv_k2.d[1] = hr46::deg2rad(*(d + 1));
+  xv_k2.d[2] = hr46::deg2rad(*(d + 2));
+  xv_k2.d[3] = hr46::deg2rad(*(d + 3));
+  xv_k2.d[4] = hr46::deg2rad(*(d + 4));
 
-  cal_fwd_kine((st_xv_k*)&xv_k2_.x);
+  cal_fwd_kine((st_xv_k*)&xv_k2.x);
 
-  x3 = xv_k2_.x[3];
-  y3 = xv_k2_.y[3];
+  x3 = xv_k2.x[3];
+  y3 = xv_k2.y[3];
 
   _sinx = std::sin(hr46::deg2rad(*(x + 3)));
   _cosx = std::cos(hr46::deg2rad(*(x + 3)));
 
-  xv_k2_.x[3] = x3 * _cosx - y3 * _sinx;
-  xv_k2_.y[3] = x3 * _sinx + y3 * _cosx;
+  xv_k2.x[3] = x3 * _cosx - y3 * _sinx;
+  xv_k2.y[3] = x3 * _sinx + y3 * _cosx;
 
-  (*x) = xv_k2_.x[3];
-  (*(x + 1)) = xv_k2_.y[3];
-  (*(x + 2)) = xv_k2_.z[3];
+  (*x) = xv_k2.x[3];
+  (*(x + 1)) = xv_k2.y[3];
+  (*(x + 2)) = xv_k2.z[3];
 }
 
 /*--------------------------------------*/
@@ -214,7 +223,7 @@ void Kine::trk_kine()
   xv_kine_[0].foot_r = serv_->xv_ref_.d[FOOT_ROLL_R];
   xv_kine_[0].yaw = serv_->xv_ref_.d[LEG_YAW_R];
 
-  fwd_kine_fun(&xv_kine_[0].hip_r, &xv_kine_[0].x);
+  fwd_kine_fun(LEG_YAW_R, &xv_kine_[0].hip_r, &xv_kine_[0].x);
 
   xv_kine_[1].hip_r = serv_->xv_ref_.d[LEG_ROLL_L];
   xv_kine_[1].leg = 0.f;
@@ -223,7 +232,7 @@ void Kine::trk_kine()
   xv_kine_[1].foot_r = serv_->xv_ref_.d[FOOT_ROLL_L];
   xv_kine_[1].yaw = serv_->xv_ref_.d[LEG_YAW_L];
 
-  fwd_kine_fun(&xv_kine_[1].hip_r, &xv_kine_[1].x);
+  fwd_kine_fun(LEG_YAW_L, &xv_kine_[1].hip_r, &xv_kine_[1].x);
 
   calc_mv_->xv_data_x_r_.time = calc_mv_->xv_data_y_r_.time = calc_mv_->xv_data_y_r2_.time =
       calc_mv_->xv_data_z_r_.time = calc_mv_->xv_data_x_l_.time = calc_mv_->xv_data_y_l_.time =

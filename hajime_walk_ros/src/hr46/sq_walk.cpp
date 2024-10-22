@@ -19,8 +19,8 @@
 #include "hr46/sq_walk.hpp"
 #include "hr46/func.hpp"
 #include "hr46/var.hpp"
-#include "hr46/mvtbl.hpp"
 
+#include <iostream>
 namespace hr46
 {
 
@@ -114,6 +114,8 @@ SqWalk::SqWalk()
   hr46::dlim_wait_fun_init(&xp_dlim_wait_y_, &xv_dlim_wait_y_);
   hr46::dlim_wait_fun_init(&xp_dlim_wait_theta_, &xv_dlim_wait_theta_);
   hr46::dlim_wait_fun_init(&xp_dlim_wait_pitch_, &xv_dlim_wait_pitch_);
+
+  mv_tbl_zmp_sel_ = MV_TBL_ZMP2;  // use MV_TBL_ZMP2
 }
 
 int SqWalk::sq_walk()
@@ -141,7 +143,7 @@ int SqWalk::sq_walk()
   // set parameters from command receive
   if (joy_->is_walk_change_)
   {
-    xv_mv_walk_ = joy_->copy_joy_parameter();  // command receive
+    joy_->copy_joy_parameter();  // command receive
     joy_->is_walk_change_ = 0;
   }
 
@@ -402,30 +404,28 @@ void SqWalk::sq_walk_fun()
       serv_->set_sw_ref_d(FOOT_XYZ);  // foot xyz position control
 
       // X trajectory table = lamp
-      calc_mv_->xv_data_x_r_.mv_tbl_select = MV_TBL_LAMP;                      // right foot table is lamp function
-      calc_mv_->xv_data_x_l_.mv_tbl_select = MV_TBL_LAMP;                      // left foot table is lamp function
-      calc_mv_->chg_mvtbl(&calc_mv_->xv_mvdata_[0], &calc_mv_->xv_data_x_r_);  // reset trajectory table xv_mvdata[0]
-      calc_mv_->chg_mvtbl(&calc_mv_->xv_mvdata_[3], &calc_mv_->xv_data_x_l_);  // reset trajectory table xv_mvdata[3]
+      calc_mv_->xv_data_x_r_.mv_tbl_select = MV_TBL_LAMP;  // right foot table is lamp function
+      calc_mv_->xv_data_x_l_.mv_tbl_select = MV_TBL_LAMP;  // left foot table is lamp function
+      calc_mv_->chg_mvtbl(&calc_mv_->xv_mvdata_[0]);       // reset trajectory table xv_mvdata[0]
+      calc_mv_->chg_mvtbl(&calc_mv_->xv_mvdata_[3]);       // reset trajectory table xv_mvdata[3]
 
       // THETA trajectory table = lamp
       calc_mv_->xv_data_d_[LEG_YAW_R].mv_tbl_select = MV_TBL_LAMP;  // right yaw is lamp function
       calc_mv_->xv_data_d_[LEG_YAW_L].mv_tbl_select = MV_TBL_LAMP;  // left yaw is lamp function
-      calc_mv_->chg_mvtbl(&calc_mv_->xv_mvdata_[LEG_YAW_R],
-                          &calc_mv_->xv_data_d_[LEG_YAW_R]);  // reset trajectory table xv_mvdata[LEG_YAW_R]
-      calc_mv_->chg_mvtbl(&calc_mv_->xv_mvdata_[LEG_YAW_L],
-                          &calc_mv_->xv_data_d_[LEG_YAW_L]);  // reset trajectory table xv_mvdata[LEG_YAW_L]
+      calc_mv_->chg_mvtbl(&calc_mv_->xv_mvdata_d_[LEG_YAW_R]);      // reset trajectory table xv_mvdata[LEG_YAW_R]
+      calc_mv_->chg_mvtbl(&calc_mv_->xv_mvdata_d_[LEG_YAW_L]);      // reset trajectory table xv_mvdata[LEG_YAW_L]
 
       // Y(xmp) trajectory table = lamp
-      calc_mv_->xv_data_y_r_.mv_tbl_select = mv_tbl_zmp_sel;                   // set to MV_TBL_ZMP2
-      calc_mv_->xv_data_y_l_.mv_tbl_select = mv_tbl_zmp_sel;                   // set to MV_TBL_ZMP2
-      calc_mv_->chg_mvtbl(&calc_mv_->xv_mvdata_[1], &calc_mv_->xv_data_y_r_);  // reset trajectory table xv_mvdata[1]
-      calc_mv_->chg_mvtbl(&calc_mv_->xv_mvdata_[4], &calc_mv_->xv_data_y_l_);  // reset trajectory table xv_mvdata[4]
+      calc_mv_->xv_data_y_r_.mv_tbl_select = mv_tbl_zmp_sel_;  // set to MV_TBL_ZMP2
+      calc_mv_->xv_data_y_l_.mv_tbl_select = mv_tbl_zmp_sel_;  // set to MV_TBL_ZMP2
+      calc_mv_->chg_mvtbl(&calc_mv_->xv_mvdata_[1]);           // reset trajectory table xv_mvdata[1]
+      calc_mv_->chg_mvtbl(&calc_mv_->xv_mvdata_[4]);           // reset trajectory table xv_mvdata[4]
 
       // Y(side step) trajectory table = lamp
-      calc_mv_->xv_data_y_r2_.mv_tbl_select = mv_tbl_zmp_sel;                    // set to MV_TBL_ZMP2
-      calc_mv_->xv_data_y_l2_.mv_tbl_select = mv_tbl_zmp_sel;                    // set to MV_TBL_ZMP2
-      calc_mv_->chg_mvtbl(&calc_mv_->xv_mvdata_[9], &calc_mv_->xv_data_y_r2_);   // reset trajectory table xv_mvdata[9]
-      calc_mv_->chg_mvtbl(&calc_mv_->xv_mvdata_[10], &calc_mv_->xv_data_y_l2_);  // reset trajectory table xv_mvdata[10]
+      calc_mv_->xv_data_y_r2_.mv_tbl_select = mv_tbl_zmp_sel_;  // set to MV_TBL_ZMP2
+      calc_mv_->xv_data_y_l2_.mv_tbl_select = mv_tbl_zmp_sel_;  // set to MV_TBL_ZMP2
+      calc_mv_->chg_mvtbl(&calc_mv_->xv_mvdata_[9]);            // reset trajectory table xv_mvdata[9]
+      calc_mv_->chg_mvtbl(&calc_mv_->xv_mvdata_[10]);           // reset trajectory table xv_mvdata[10]
 
       flag_walk_.y_on = flag_walk_.y;        // store actual walk y direction
       flag_walk_.turn_on = flag_walk_.turn;  // store actual turn direction
@@ -596,8 +596,9 @@ void SqWalk::sq_walk_fun()
       calc_mv_->xv_data_d_[ELBOW_PITCH_R].time = t1_r;
       calc_mv_->xv_data_d_[ELBOW_PITCH_L].time = t1_r;
       calc_mv_->xv_data_d_[ARM_PITCH_R].pos = sq_ready_->xp_mv_ready_.arm_sh_pitch - xv_mv_walk_.arm_sh_pitch;
-      calc_mv_->xv_data_d_[ARM_PITCH_L].pos = sq_ready_->xp_mv_ready_.arm_sh_pitch - xv_mv_walk_.arm_sh_pitch;
+      calc_mv_->xv_data_d_[ARM_PITCH_L].pos = sq_ready_->xp_mv_ready_.arm_sh_pitch + xv_mv_walk_.arm_sh_pitch;
       calc_mv_->xv_data_d_[ELBOW_PITCH_R].pos = sq_ready_->xp_mv_ready_.arm_el_pitch - xv_mv_walk_.arm_el_pitch;
+      calc_mv_->xv_data_d_[ELBOW_PITCH_L].pos = sq_ready_->xp_mv_ready_.arm_el_pitch + xv_mv_walk_.arm_el_pitch;
 
       // yaw control
       calc_mv_->xv_data_d_[LEG_YAW_R].time = calc_mv_->xv_data_d_[LEG_YAW_L].time = t1a_r;  // time to move yaw
@@ -637,7 +638,7 @@ void SqWalk::sq_walk_fun()
       calc_mv_->xv_data_x_r_.mv_tbl_select = MV_TBL_X_DW;
 
       calc_mv_->xv_data_z_r_.pos =
-          std::max(xv_mv_walk_.z, Z3_LIMIT_L);  // position to move the right foot (swing leg) up and down
+          std::max(sq_ready_->xp_mv_ready_.z3, Z3_LIMIT_L);  // position to move the right foot (swing leg) up and down
       calc_mv_->xv_data_z_r_.mv_tbl_select =
           MV_TBL_Z_DW;                      // trajectory table for moving the right foot (swing leg) up and down
       calc_mv_->xv_data_z_r_.time = t2a_r;  // time to move the right foot (swing leg) up and down
@@ -849,7 +850,7 @@ void SqWalk::sq_walk_fun()
       calc_mv_->xv_data_x_l_.mv_tbl_select = MV_TBL_X_DW;
 
       calc_mv_->xv_data_z_l_.pos =
-          std::max(xv_mv_walk_.z, Z3_LIMIT_L);  // position to move the left foot (swing leg) up and down
+          std::max(sq_ready_->xp_mv_ready_.z3, Z3_LIMIT_L);  // position to move the left foot (swing leg) up and down
       calc_mv_->xv_data_z_l_.mv_tbl_select =
           MV_TBL_Z_DW;                      // trajectory table for moving the left foot (swing leg) up and down
       calc_mv_->xv_data_z_l_.time = t2a_l;  // time to move the left foot (swing leg) up and down

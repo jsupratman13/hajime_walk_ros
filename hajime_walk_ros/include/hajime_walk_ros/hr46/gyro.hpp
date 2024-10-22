@@ -95,7 +95,7 @@ struct st_xv_gyro
 
 struct st_flag_gyro
 {
-  short vib;        // vibraion feedback
+  short vib;        // vibration feedback
   short vib_auto;   // auto/manual
   short vib_manu;   // manual setting
   short zero;       // offset clear

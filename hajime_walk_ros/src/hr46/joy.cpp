@@ -560,7 +560,7 @@ void Joy::joy(short& flag_face_control)
       if (xv_comm_bin.para1 == 1)
       {
         gyro_->flag_gyro_.zero = ON;
-        // TODO gyro_fun();
+        gyro_->gyro_fun();
       }
       break;
 
@@ -652,17 +652,15 @@ void Joy::joy_read()
   count_joy_++;
 }
 
-st_xv_mv_walk Joy::copy_joy_parameter()
+void Joy::copy_joy_parameter()
 {
-  st_xv_mv_walk xv_mv_walk;
-  xv_mv_walk.num = xv_joy_.walk_num;                          // number of steps
-  xv_mv_walk.time = xv_joy_.walk_time;                        // walk period / 2
-  xv_mv_walk.zmp = xv_joy_.walk_zmp;                          // Yzmp [mm]
-  xv_mv_walk.time_dutyfactor = xv_joy_.walk_time_dutyfactor;  // duty factor
-  xv_mv_walk.x_percent = xv_joy_.walk_x_percent;              // foot x (0-1)
-  xv_mv_walk.y_percent = xv_joy_.walk_y_percent;              // foot y (0-1)
-  xv_mv_walk.theta_percent = xv_joy_.walk_theta_percent;      // foot theta (0-1)
-  return xv_mv_walk;
+  sq_walk_->xv_mv_walk_.num = xv_joy_.walk_num;                          // number of steps
+  sq_walk_->xv_mv_walk_.time = xv_joy_.walk_time;                        // walk period / 2
+  sq_walk_->xv_mv_walk_.zmp = xv_joy_.walk_zmp;                          // Yzmp [mm]
+  sq_walk_->xv_mv_walk_.time_dutyfactor = xv_joy_.walk_time_dutyfactor;  // duty factor
+  sq_walk_->xv_mv_walk_.x_percent = xv_joy_.walk_x_percent;              // foot x (0-1)
+  sq_walk_->xv_mv_walk_.y_percent = xv_joy_.walk_y_percent;              // foot y (0-1)
+  sq_walk_->xv_mv_walk_.theta_percent = xv_joy_.walk_theta_percent;      // foot theta (0-1)
 }
 
 }  // namespace hr46

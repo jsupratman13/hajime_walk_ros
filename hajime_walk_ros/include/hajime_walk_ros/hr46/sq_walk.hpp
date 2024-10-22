@@ -180,6 +180,7 @@ public:
   st_xv_dlim_wait xv_dlim_wait_pitch_;  // Variables for the pitch direction tilt
   char accurate_one_step_mode_;         // Mode for accurate one-step walking
   short flag_md_walk_end_;              // Walking end flag
+  short mv_tbl_zmp_sel_;                // Select the ZMP table to use from mv_tbl_ mvtbl.hpp
 
   SqWalk();
   int sq_walk();       // walking sequence, 1 finished, 0 not finished, called every 20 ms

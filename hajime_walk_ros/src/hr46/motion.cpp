@@ -116,7 +116,7 @@ void Motion::motion(short flag_face_control)
         mode_motion_ = MOTION_NONE;
       }
 
-      mode_motion_from_ = STATE_STOP;
+      mode_motion_from_ = MOTION_READY;
       flag_moving_ = STATE_MOVING;
       break;
 
@@ -135,7 +135,7 @@ void Motion::motion(short flag_face_control)
     case MOTION_MOTION:  // motion sequence
       mode_motion_from_ = mode_motion_;
       flag_moving_ = STATE_MOTION;
-      if (sq_motion_->sq_motion())
+      if (sq_motion_->sq_motion(flag_face_control))
       {
         flag_moving_ = STATE_STOP;
         mode_motion_ = MOTION_READY;

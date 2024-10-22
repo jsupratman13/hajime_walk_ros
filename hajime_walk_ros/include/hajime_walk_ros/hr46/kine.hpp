@@ -19,6 +19,7 @@
 #ifndef KINE_HPP_
 #define KINE_HPP_
 
+#include <unordered_map>
 #include <array>
 #include <memory>
 
@@ -64,8 +65,8 @@ struct st_xv_posture
 class Kine
 {
 private:
-  st_xv_k xv_k_;
-  st_xv_k xv_k2_;
+  std::unordered_map<int, st_xv_k> xv_k_;
+  std::unordered_map<int, st_xv_k> xv_k2_;
 
 public:
   std::array<st_xv_kine, 2> xv_kine_;
@@ -74,9 +75,9 @@ public:
 
   Kine();
   void kine();
-  void kine_fun(float* u, float* y);
+  void kine_fun(int side, float* u, float* y);
   void cal_inv_kine(st_xv_k* a);
-  void fwd_kine_fun(float* d, float* x);
+  void fwd_kine_fun(int side, float* d, float* x);
   void cal_fwd_kine(st_xv_k* a);
   void trk_kine();
 

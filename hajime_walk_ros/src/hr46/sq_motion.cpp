@@ -28,7 +28,7 @@
 namespace hr46
 {
 
-int SqMotion::sq_motion()
+int SqMotion::sq_motion(short flag_face_control)
 {
   short i, j, n;
   short _flag_w;
@@ -46,7 +46,9 @@ int SqMotion::sq_motion()
       flag_md_motion_end_ = OFF;
       flag_md_motion_hold_ = OFF;
       flag_sq_motion_cancel_ = OFF;
-      flag_motion_gyro_ = OFF;  // Gyro feedback off
+      flag_motion_gyro_ = OFF;
+      gyro_->flag_gyro_.vib_auto = ON;  // Gyro feedback off
+
       {
         for (i = 0; i < SERV_NUM; i++)
           xv_ref_d_org_[i] = serv_->xv_ref_.d[i];
@@ -102,7 +104,7 @@ int SqMotion::sq_motion()
         }
         else
         {
-          if (1)  // TODO flag_face_control
+          if (!flag_face_control)
           {
             if (flag_variable_motion_ == ON)
             {
@@ -119,11 +121,11 @@ int SqMotion::sq_motion()
         }
       }
 
-      if ((xp_mv_motionbuf_[n][sq_motion_mtn_].cntr[2] & 0xF0) == MODE2_GYRO2)
+      if ((xp_mv_motionbuf_[n][sq_motion_mtn_].cntr[2] & 0xF0) == MODE2_GYRO1)
       {
         flag_motion_gyro_ = ON;
       }
-      else if ((xp_mv_motionbuf_[n][sq_motion_mtn_].cntr[2] & 0xF0) == MODE2_GYRO1)
+      else if ((xp_mv_motionbuf_[n][sq_motion_mtn_].cntr[2] & 0xF0) == MODE2_GYRO2)
       {
         flag_motion_gyro_ = ON3;
       }
@@ -191,6 +193,7 @@ int SqMotion::sq_motion()
           if (xp_mv_motionbuf_[n][sq_motion_mtn_].cntr[1] >= 1 &&
               xp_mv_motionbuf_[n][sq_motion_mtn_].cntr[1] <= MODE2_MOTION_SIZE)
           {
+            ++count_motion_repeat_;
             sq_motion_mtn_ = xp_mv_motionbuf_[n][sq_motion_mtn_].cntr[1] - 1;
           }
           else
@@ -233,6 +236,7 @@ int SqMotion::sq_motion()
         mode_sq_motion_ = SQ_MODE2_END;
       }
       break;
+
     case SQ_MODE2_END:  // end
       gyro_->flag_gyro_.vib_auto = ON;
       gyro_->flag_gyro_.vib = ON;
@@ -286,7 +290,7 @@ int SqMotion::sq_motion()
       }
       else
       {
-        mode_sq_motion_ = SQ_MODE2_INIT;
+        motion_->sq_flag_.motion = OFF;
         flag_md_motion_end_ = ON;
         mode_sq_motion_ = SQ_MODE2_INIT;
         mode_sq_time_ = 0.0f;

@@ -127,7 +127,7 @@ public:
 
   void joy_init();
   void joy(short& flag_face_control);
-  st_xv_mv_walk copy_joy_parameter();
+  void copy_joy_parameter();
   void joy_read();
 
   // AccSharedPtr acc_;

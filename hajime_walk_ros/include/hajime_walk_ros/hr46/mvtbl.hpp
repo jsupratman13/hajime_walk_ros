@@ -31,8 +31,6 @@ namespace hr46
 
 float zmp_fun(float time, float r, float h_cog);
 
-extern short mv_tbl_zmp_sel;  // use zmp table select
-
 class MvTbl
 {
 public:

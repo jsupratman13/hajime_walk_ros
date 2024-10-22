@@ -24,7 +24,7 @@ namespace hr46
 void CalcDeg::calc_deg()
 {
   /*** calculate foot roll ***/
-  /* foot is paralell to the ground */
+  /* foot is parallel to the ground */
   if (sq_walk_->flag_walk_.upleg == RIGHT) /* right leg is up */
   {
     kine_->xv_kine_[0].foot_r = -kine_->xv_kine_[0].hip_r; /* right foot roll */
@@ -52,7 +52,7 @@ void CalcDeg::calc_deg()
   kine_->xv_kine_[1].hip_r += kine_->xv_posture_.roll2; /* lef hip roll */
 
   /*** calculate gyro feedback control ***/
-  // TODO: gyro->gyro_cntr_fun();
+  gyro_->gyro_cntr_fun();
   //  PostureControl();
 
   /*** foot touch control ***/

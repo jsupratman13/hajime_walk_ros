@@ -210,7 +210,7 @@ float CalcMv::calc_mvdata(st_xv_mvdata* x, st_xv_data* a)
 }
 
 // reset trajectory data
-void CalcMv::chg_mvtbl(st_xv_mvdata* x, st_xv_data* a)
+void CalcMv::chg_mvtbl(st_xv_mvdata* x)
 {
   x->t = 0.0f;
   x->mv_tbl = MV_TBL_PI;
