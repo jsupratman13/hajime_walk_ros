@@ -29,6 +29,10 @@
 namespace hr46
 {
 
+// forward declaration
+class CalcMv;
+class Kine;
+
 struct st_xv_sv
 {
   long d;           // [0.01deg]
@@ -82,8 +86,10 @@ public:
   void set_sw_ref_d(int n);
   short check_sw_ref_d();
 
-  CalcMvSharedPtr calc_mv_;
-  KineSharedPtr kine_;
+  // CalcMvSharedPtr calc_mv_;
+  // KineSharedPtr kine_;
+  std::shared_ptr<CalcMv> calc_mv_;
+  std::shared_ptr<Kine> kine_;
 };
 
 using ServSharedPtr = std::shared_ptr<Serv>;

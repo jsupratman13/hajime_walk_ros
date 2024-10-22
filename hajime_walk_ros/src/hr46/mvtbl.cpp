@@ -24,6 +24,8 @@
 namespace hr46
 {
 
+short mv_tbl_zmp_sel = MV_TBL_ZMP2;  // use zmp2 table
+
 float zmp_fun(float time, float r, float h_cog)
 {
   float c1;

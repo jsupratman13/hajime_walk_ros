@@ -26,6 +26,9 @@
 namespace hr46
 {
 
+// forward declaration
+class Motion;
+
 class SqStart
 {
 private:
@@ -39,7 +42,8 @@ public:
   void sq_start_init();
   int sq_start();
 
-   MotionSharedPtr motion_;
+  // MotionSharedPtr motion_;
+  std::shared_ptr<Motion> motion_;
 };
 
 using SqStartSharedPtr = std::shared_ptr<SqStart>;

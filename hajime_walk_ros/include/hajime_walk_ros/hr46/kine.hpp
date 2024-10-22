@@ -27,6 +27,9 @@
 
 namespace hr46
 {
+// forward declaration
+class CalcMv;
+class Serv;
 
 struct st_xv_k
 {
@@ -77,8 +80,10 @@ public:
   void cal_fwd_kine(st_xv_k* a);
   void trk_kine();
 
-  ServSharedPtr serv_;
-  CalcMvSharedPtr calc_mv_;
+  // ServSharedPtr serv_;
+  // CalcMvSharedPtr calc_mv_;
+  std::shared_ptr<CalcMv> calc_mv_;
+  std::shared_ptr<Serv> serv_;
 };
 
 using KineSharedPtr = std::shared_ptr<Kine>;

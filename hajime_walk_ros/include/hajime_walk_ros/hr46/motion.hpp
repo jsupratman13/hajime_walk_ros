@@ -22,6 +22,7 @@
 #include <memory>
 
 #include "var.hpp"
+#include "sq_motion.hpp"
 #include "sq_start.hpp"
 #include "sq_straight.hpp"
 #include "sq_ready.hpp"
@@ -29,6 +30,12 @@
 
 namespace hr46
 {
+// forward declaration
+class SqMotion;
+class SqStart;
+class SqReady;
+class SqStraight;
+class SqWalk;
 
 enum
 {
@@ -73,11 +80,16 @@ public:
   void motion(short flag_face_control);
   void reset_flag();
 
-  SqMotionSharedPtr sq_motion_;
-  SqReadySharedPtr sq_ready_;
-  SqStartSharedPtr sq_start_;
-  SqStraightSharedPtr sq_straight_;
-  SqWalkSharedPtr sq_walk_;
+  // SqMotionSharedPtr sq_motion_;
+  std::shared_ptr<SqMotion> sq_motion_;
+  // SqReadySharedPtr sq_ready_;
+  std::shared_ptr<SqReady> sq_ready_;
+  // SqStartSharedPtr sq_start_;
+  std::shared_ptr<SqStart> sq_start_;
+  // SqStraightSharedPtr sq_straight_;
+  std::shared_ptr<SqStraight> sq_straight_;
+  // SqWalkSharedPtr sq_walk_;
+  std::shared_ptr<SqWalk> sq_walk_;
 };
 
 using MotionSharedPtr = std::shared_ptr<Motion>;

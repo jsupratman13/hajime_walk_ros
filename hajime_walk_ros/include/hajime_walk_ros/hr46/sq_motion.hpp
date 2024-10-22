@@ -30,6 +30,11 @@
 
 namespace hr46
 {
+// forward declaration
+class CalcMv;
+class Gyro;
+class Motion;
+class Serv;
 
 #define MODE2_MOTION_SIZE (16)
 #define MODE2_MOTION_NUM (101)
@@ -199,10 +204,14 @@ public:
   void set_motionbuf(st_xp_mv_motion motionbuf[MODE2_MOTION_SIZE], std::ifstream& file);
   void load_pc_motion(std::string directory);
 
-  CalcMvSharedPtr calc_mv_;
-  GyroSharedPtr gyro_;
-  MotionSharedPtr motion_;
-  ServSharedPtr serv_;
+  // CalcMvSharedPtr calc_mv_;
+  std::shared_ptr<CalcMv> calc_mv_;
+  // GyroSharedPtr gyro_;
+  std::shared_ptr<Gyro> gyro_;
+  // MotionSharedPtr motion_;
+  std::shared_ptr<Motion> motion_;
+  // ServSharedPtr serv_;
+  std::shared_ptr<Serv> serv_;
 };
 
 using SqMotionSharedPtr = std::shared_ptr<SqMotion>;

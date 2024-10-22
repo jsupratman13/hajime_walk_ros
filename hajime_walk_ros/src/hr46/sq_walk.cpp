@@ -416,14 +416,14 @@ void SqWalk::sq_walk_fun()
                           &calc_mv_->xv_data_d_[LEG_YAW_L]);  // reset trajectory table xv_mvdata[LEG_YAW_L]
 
       // Y(xmp) trajectory table = lamp
-      calc_mv_->xv_data_y_r_.mv_tbl_select = hr46::mv_tbl_zmp_sel;             // set to MV_TBL_ZMP2
-      calc_mv_->xv_data_y_l_.mv_tbl_select = hr46::mv_tbl_zmp_sel;             // set to MV_TBL_ZMP2
+      calc_mv_->xv_data_y_r_.mv_tbl_select = mv_tbl_zmp_sel;                   // set to MV_TBL_ZMP2
+      calc_mv_->xv_data_y_l_.mv_tbl_select = mv_tbl_zmp_sel;                   // set to MV_TBL_ZMP2
       calc_mv_->chg_mvtbl(&calc_mv_->xv_mvdata_[1], &calc_mv_->xv_data_y_r_);  // reset trajectory table xv_mvdata[1]
       calc_mv_->chg_mvtbl(&calc_mv_->xv_mvdata_[4], &calc_mv_->xv_data_y_l_);  // reset trajectory table xv_mvdata[4]
 
       // Y(side step) trajectory table = lamp
-      calc_mv_->xv_data_y_r2_.mv_tbl_select = hr46::mv_tbl_zmp_sel;              // set to MV_TBL_ZMP2
-      calc_mv_->xv_data_y_l2_.mv_tbl_select = hr46::mv_tbl_zmp_sel;              // set to MV_TBL_ZMP2
+      calc_mv_->xv_data_y_r2_.mv_tbl_select = mv_tbl_zmp_sel;                    // set to MV_TBL_ZMP2
+      calc_mv_->xv_data_y_l2_.mv_tbl_select = mv_tbl_zmp_sel;                    // set to MV_TBL_ZMP2
       calc_mv_->chg_mvtbl(&calc_mv_->xv_mvdata_[9], &calc_mv_->xv_data_y_r2_);   // reset trajectory table xv_mvdata[9]
       calc_mv_->chg_mvtbl(&calc_mv_->xv_mvdata_[10], &calc_mv_->xv_data_y_l2_);  // reset trajectory table xv_mvdata[10]
 

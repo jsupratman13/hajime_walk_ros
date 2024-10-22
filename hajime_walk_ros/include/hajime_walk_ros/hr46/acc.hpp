@@ -25,6 +25,10 @@
 
 namespace hr46
 {
+// forward declaration
+class CalcMv;
+class Motion;
+
 #define ACC_SENSOR  // use acc sensor
 
 enum
@@ -110,8 +114,10 @@ public:
   void acc_init();
   void acc_func();
 
-  CalcMvSharedPtr calc_mv_;
-  MotionSharedPtr motion_;
+  // CalcMvSharedPtr calc_mv_;
+  // MotionSharedPtr motion_;
+  std::shared_ptr<CalcMv> calc_mv_;
+  std::shared_ptr<Motion> motion_;
 };
 
 using AccSharedPtr = std::shared_ptr<Acc>;

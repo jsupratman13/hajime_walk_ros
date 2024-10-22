@@ -133,6 +133,39 @@ enum
   SPARE28 = 28
 };
 
+struct st_xv_mv_walk
+{
+  long num;                  // Number of steps	[-]
+  float time;                // Half of the walking cycle [sec]
+  float time_old;            // Time when the walking cycle was last changed [sec]
+  float x_swg;               // Step length in the forward/backward direction of the swing leg [mm]
+  float x_spt;               // Step length in the forward/backward direction of the support leg [mm]
+  float y_swg;               // Step length in the left/right direction of the swing leg [mm]
+  float y_spt;               // Step length in the left/right direction of the support leg [mm]
+  float theta;               // Yaw angle of the legs for each turn	[deg]
+  float z;                   // Height to lift the foot [mm]
+  float pitch;               // Angle to bend forward [deg]
+  float arm_sh_pitch;        // Shoulder pitch angle [deg]
+  float arm_el_pitch;        // Elbow pitch angle [deg]
+  float zmp;                 // Swing width of the foot according to ZMP criterion? [mm]
+  float x_percent;           // Final percentage of step length in the x direction (0-1) [-]
+  float y_percent;           // Final percentage of step length in the y direction (0-1) [-]
+  float theta_percent;       // Final percentage of yaw angle of the legs (0-1) [-]
+  float sidestep_time_k_r;   // Percentage of time for right foot movement (0-1) [bit]
+  float sidestep_time_k_l;   // Percentage of time for left foot movement (0-1) [bit]
+  float sidestep_roll;       // Roll axis rotation angle during side step [deg]
+  float sidestep_roll_z;     // Change in the height of the leg axis during side step [mm]
+  float x_percent_dlim;      // Current percentage of step length in the x direction (0-1) [-]
+  float y_percent_dlim;      // Current percentage of step length in the y direction (0-1) [-]
+  float theta_percent_dlim;  // Current percentage of yaw angle of the legs (0-1) [-]
+  float pitch_percent_dlim;  // Current percentage of pitch axis (0-1) [-]
+  float time_dutyfactor;     // Ratio of time when the leg is in the swing phase (0-1) [-]
+  float accurate_step_x;     // Distance moved forward in one step [mm]
+  float accurate_step_y;
+  float accurate_step_z;
+  float accurate_step_th;
+  float accurate_step_time;
+};
 }  // namespace hr46
 
 #endif  // VAR_HPP_

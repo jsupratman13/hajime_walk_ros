@@ -28,6 +28,12 @@
 
 namespace hr46
 {
+// forward declaration
+class Acc;
+class Joy;
+class Kine;
+class Serv;
+class SqWalk;
 
 struct st_xp_gyro
 {
@@ -117,11 +123,16 @@ public:
   short w_pulse1_ = 0;
   float count_ = 0.0f;
 
-  AccSharedPtr acc_;
-  JoySharedPtr joy_;
-  KineSharedPtr kine_;
-  ServSharedPtr serv_;
-  SqWalkSharedPtr sq_walk_;
+  // AccSharedPtr acc_;
+  std::shared_ptr<Acc> acc_;
+  // JoySharedPtr joy_;
+  std::shared_ptr<Joy> joy_;
+  // KineSharedPtr kine_;
+  std::shared_ptr<Kine> kine_;
+  // ServSharedPtr serv_;
+  std::shared_ptr<Serv> serv_;
+  // SqWalkSharedPtr sq_walk_;
+  std::shared_ptr<SqWalk> sq_walk_;
 };
 
 using GyroSharedPtr = std::shared_ptr<Gyro>;

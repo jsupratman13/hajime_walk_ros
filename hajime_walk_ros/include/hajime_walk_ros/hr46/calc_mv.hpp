@@ -33,6 +33,12 @@
 namespace hr46
 {
 
+// forward declaration
+class Kine;
+class Motion;
+class Serv;
+class SqWalk;
+
 #define MVDATA_NUM (12)  // number of trajectory tables
 #define EPS (0.001)      // epsilon : nearly equals zero
 
@@ -96,16 +102,20 @@ public:
   float odometry_correct_para_x_;
   float odometry_correct_para_y_;
 
-  void calc_mv_init(st_xp_mv_straight xp_mv_straight);
+  void calc_mv_init(float z3);
   void calc_mv();
   float calc_mvdata(st_xv_mvdata*, st_xv_data*);
   void chg_mvtbl(st_xv_mvdata*, st_xv_data*);
 
-  KineSharedPtr kine_;
-  MotionSharedPtr motion_;
+  // KineSharedPtr kine_;
+  std::shared_ptr<Kine> kine_;
+  // MotionSharedPtr motion_;
+  std::shared_ptr<Motion> motion_;
   MvTblSharedPtr mv_tbl_;
-  ServSharedPtr serv_;
-  SqWalkSharedPtr sq_walk_;
+  // ServSharedPtr serv_;
+  std::shared_ptr<Serv> serv_;
+  // SqWalkSharedPtr sq_walk_;
+  std::shared_ptr<SqWalk> sq_walk_;
 };
 
 using CalcMvSharedPtr = std::shared_ptr<CalcMv>;

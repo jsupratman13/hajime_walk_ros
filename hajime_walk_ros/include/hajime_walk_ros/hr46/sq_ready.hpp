@@ -30,6 +30,14 @@
 
 namespace hr46
 {
+// forward declaration
+class CalcMv;
+class Kine;
+class Motion;
+class Gyro;
+class Serv;
+class SqWalk;
+
 enum
 {
   SQ_READY_INIT = 0,
@@ -67,12 +75,18 @@ public:
   void sq_ready_init(int slow_mode);
   int sq_ready(short flag_face_control);
 
-  CalcMvSharedPtr calc_mv_;
-  GyroSharedPtr gyro_;
-  KineSharedPtr kine_;
-  MotionSharedPtr motion_;
-  ServSharedPtr serv_;
-  SqWalkSharedPtr sq_walk_;
+  // CalcMvSharedPtr calc_mv_;
+  std::shared_ptr<CalcMv> calc_mv_;
+  // GyroSharedPtr gyro_;
+  std::shared_ptr<Gyro> gyro_;
+  // KineSharedPtr kine_;
+  std::shared_ptr<Kine> kine_;
+  // MotionSharedPtr motion_;
+  std::shared_ptr<Motion> motion_;
+  // ServSharedPtr serv_;
+  std::shared_ptr<Serv> serv_;
+  // SqWalkSharedPtr sq_walk_;
+  std::shared_ptr<SqWalk> sq_walk_;
 };
 
 using SqReadySharedPtr = std::shared_ptr<SqReady>;

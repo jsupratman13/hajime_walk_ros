@@ -36,6 +36,15 @@
 
 namespace hr46
 {
+// forward declaration
+class Acc;
+class CalcMv;
+class Gyro;
+class Motion;
+class Serv;
+class SqMotion;
+class SqReady;
+class SqWalk;
 
 #define EOF_CODE ('\0')
 #define EOF_CODE2 ('#')
@@ -121,14 +130,22 @@ public:
   st_xv_mv_walk copy_joy_parameter();
   void joy_read();
 
-  AccSharedPtr acc_;
-  CalcMvSharedPtr calc_mv_;
-  GyroSharedPtr gyro_;
-  MotionSharedPtr motion_;
-  ServSharedPtr serv_;
-  SqMotionSharedPtr sq_motion_;
-  SqReadySharedPtr sq_ready_;
-  SqWalkSharedPtr sq_walk_;
+  // AccSharedPtr acc_;
+  std::shared_ptr<Acc> acc_;
+  // CalcMvSharedPtr calc_mv_;
+  std::shared_ptr<CalcMv> calc_mv_;
+  // GyroSharedPtr gyro_;
+  std::shared_ptr<Gyro> gyro_;
+  // MotionSharedPtr motion_;
+  std::shared_ptr<Motion> motion_;
+  // ServSharedPtr serv_;
+  std::shared_ptr<Serv> serv_;
+  // SqMotionSharedPtr sq_motion_;
+  std::shared_ptr<SqMotion> sq_motion_;
+  // SqReadySharedPtr sq_ready_;
+  std::shared_ptr<SqReady> sq_ready_;
+  // SqWalkSharedPtr sq_walk_;
+  std::shared_ptr<SqWalk> sq_walk_;
 };
 
 using JoySharedPtr = std::shared_ptr<Joy>;

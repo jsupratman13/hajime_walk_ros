@@ -25,7 +25,7 @@
 namespace hr46
 {
 
-void CalcMv::calc_mv_init(st_xp_mv_straight xp_mv_straight)
+void CalcMv::calc_mv_init(float z3)
 {
   int i;
   for (i = 0; i < SERV_NUM; i++)
@@ -66,7 +66,7 @@ void CalcMv::calc_mv_init(st_xp_mv_straight xp_mv_straight)
   xv_data_y_r2_.pos = 0.0f;
   xv_data_y_r2_.mv_tbl_select = 0;
   xv_data_z_r_.time = 0.1f;
-  xv_data_z_r_.pos = xp_mv_straight.z3;
+  xv_data_z_r_.pos = z3;  // xp_mv_straight.z3;
   xv_data_z_r_.mv_tbl_select = 0;
   xv_data_x_l_.time = 0.1f;
   xv_data_x_l_.pos = 0.0f;
@@ -78,7 +78,7 @@ void CalcMv::calc_mv_init(st_xp_mv_straight xp_mv_straight)
   xv_data_y_l2_.pos = 0.0f;
   xv_data_y_l2_.mv_tbl_select = 0;
   xv_data_z_l_.time = 0.1f;
-  xv_data_z_l_.pos = xp_mv_straight.z3;
+  xv_data_z_l_.pos = z3;  // xp_mv_straight.z3;
   xv_data_z_l_.mv_tbl_select = 0;
   xv_data_pitch_.time = 0.1f;
   xv_data_pitch_.pos = 0.0f;
@@ -87,8 +87,8 @@ void CalcMv::calc_mv_init(st_xp_mv_straight xp_mv_straight)
   xv_data_roll2_.pos = 0.0f;
   xv_data_roll2_.mv_tbl_select = 0;
 
-  xv_mvdata_[2].start = xv_mvdata_[2].out_old = xv_mvdata_[2].pos_old = xp_mv_straight.z3;
-  xv_mvdata_[5].start = xv_mvdata_[5].out_old = xv_mvdata_[5].pos_old = xp_mv_straight.z3;
+  xv_mvdata_[2].start = xv_mvdata_[2].out_old = xv_mvdata_[2].pos_old = z3;  // xp_mv_straight.z3;
+  xv_mvdata_[5].start = xv_mvdata_[5].out_old = xv_mvdata_[5].pos_old = z3;  // xp_mv_straight.z3;
 
   xv_odometry_.moveX = 0.0f;
   xv_odometry_.moveY = 0.0f;

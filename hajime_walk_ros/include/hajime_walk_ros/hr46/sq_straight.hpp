@@ -29,6 +29,12 @@
 
 namespace hr46
 {
+// forward declaration
+class CalcMv;
+class Gyro;
+class Kine;
+class Motion;
+class Serv;
 
 enum
 {
@@ -64,11 +70,16 @@ public:
   void sq_straight_init();
   int sq_straight(short flag_face_control);
 
-  CalcMvSharedPtr calc_mv_;
-  GyroSharedPtr gyro_;
-  KineSharedPtr kine_;
-  MotionSharedPtr motion_;
-  ServSharedPtr serv_;
+  // CalcMvSharedPtr calc_mv_;
+  std::shared_ptr<CalcMv> calc_mv_;
+  // GyroSharedPtr gyro_;
+  std::shared_ptr<Gyro> gyro_;
+  // KineSharedPtr kine_;
+  std::shared_ptr<Kine> kine_;
+  // MotionSharedPtr motion_;
+  std::shared_ptr<Motion> motion_;
+  // ServSharedPtr serv_;
+  std::shared_ptr<Serv> serv_;
 };
 
 using SqStraightSharedPtr = std::shared_ptr<SqStraight>;
