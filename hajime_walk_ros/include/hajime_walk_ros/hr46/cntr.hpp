@@ -40,7 +40,7 @@ namespace hr46
 {
 
 #define PARAM_TABLE_OFFSET 26
-char ParamTable[53] = {
+char g_PARAM_TABLE[53] = {
   'z', 'y', 'x', 'w', 'v', 'u', 't', 's', 'r', 'q', 'p', 'o', 'n',
   'm', 'l', 'k', 'j', 'i', 'h', 'g', 'f', 'e', 'd', 'c', 'b', 'a',  // -26 - -1
   '0',                                                              // 0
@@ -79,6 +79,7 @@ public:
   void setCommand(char cmd, int para1, int para2, int para3, int para4, int para5);
   std::vector<double> getJoints();
   void setImuData(st_xv_acc& xv_acc, st_xv_gyro& xv_gyro);
+  short getCurrentMovingState();
 };
 
 using CntrUniquePtr = std::unique_ptr<Cntr>;

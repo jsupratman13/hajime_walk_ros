@@ -140,11 +140,11 @@ void Cntr::setCommand(char cmd, int para1, int para2, int para3, int para4, int 
   switch (cmd)
   {
     case 'A':
-      param1 = ParamTable[para1 + PARAM_TABLE_OFFSET];
-      param2 = ParamTable[para2 + PARAM_TABLE_OFFSET];
-      param3 = ParamTable[para3 + PARAM_TABLE_OFFSET];
-      param4 = ParamTable[para4 + PARAM_TABLE_OFFSET];
-      param5 = ParamTable[para5 + PARAM_TABLE_OFFSET];
+      param1 = g_PARAM_TABLE[para1 + PARAM_TABLE_OFFSET];
+      param2 = g_PARAM_TABLE[para2 + PARAM_TABLE_OFFSET];
+      param3 = g_PARAM_TABLE[para3 + PARAM_TABLE_OFFSET];
+      param4 = g_PARAM_TABLE[para4 + PARAM_TABLE_OFFSET];
+      param5 = g_PARAM_TABLE[para5 + PARAM_TABLE_OFFSET];
       break;
     case 'M': {
       std::string s = std::to_string(para1);
@@ -153,7 +153,7 @@ void Cntr::setCommand(char cmd, int para1, int para2, int para3, int para4, int 
       param1 = pchar[0];
       param2 = pchar[1];
       param3 = pchar[2];
-      param4 = ParamTable[para4 + PARAM_TABLE_OFFSET];
+      param4 = g_PARAM_TABLE[para4 + PARAM_TABLE_OFFSET];
       param5 = 0;
       break;
     }
@@ -212,6 +212,12 @@ void Cntr::setImuData(st_xv_acc& xv_acc, st_xv_gyro& xv_gyro)
   gyro_->xv_gyro_.gyro_pitch2 = xv_gyro.gyro_pitch2;
   gyro_->xv_gyro_.gyro_yaw = xv_gyro.gyro_yaw;
   gyro_->xv_gyro_.gyro_yaw2 = xv_gyro.gyro_yaw2;
+}
+
+short Cntr::getCurrentMovingState()
+{
+  // return current moving state
+  return motion_->flag_moving_;
 }
 
 void Cntr::cntr()

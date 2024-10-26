@@ -1,3 +1,4 @@
+#include <actionlib/server/action_server.h>
 #include <ros/ros.h>
 #include <std_msgs/Float64MultiArray.h>
 #include <std_msgs/Empty.h>
@@ -5,14 +6,20 @@
 #include <tf2/LinearMath/Quaternion.h>
 #include <tf2/LinearMath/Matrix3x3.h>
 #include <hajime_walk_msgs/HajimeWalk.h>
-#include <hajime_walk_msgs/HajimeMotion.h>
+#include <hajime_walk_msgs/HajimeMotionAction.h>
 
 #include "hr46/cntr.hpp"
 
 class HajimeWalkRosNode
 {
 public:
-  HajimeWalkRosNode(ros::NodeHandle& nh, ros::NodeHandle& private_nh) : nh_(nh), private_nh_(private_nh)
+  HajimeWalkRosNode(const ros::NodeHandle& nh, const ros::NodeHandle& private_nh)
+    : nh_(nh)
+    , private_nh_(private_nh)
+    , has_active_motion_goal_(false)
+    , prev_moving_state_(hr46::STATE_STOP)
+    , action_server_(nh_, "hajime_walk/motion", boost::bind(&HajimeWalkRosNode::motionGoalCallback, this, _1),
+                     boost::bind(&HajimeWalkRosNode::motionCancelCallback, this, _1), false)
   {
     cntr_ = std::make_unique<hr46::Cntr>();
 
@@ -22,21 +29,32 @@ public:
 
     loadEEPROMParams();
 
-    motion_flag_ = false;
-    sub_walk_ = nh_.subscribe("/hajime_walk/walk", 10, &HajimeWalkRosNode::walkCallback, this);
-    sub_cancel_ = nh_.subscribe("/hajime_walk/cancel", 10, &HajimeWalkRosNode::cancelCallback, this);
-    sub_motion_ = nh_.subscribe("/hajime_walk/motion", 10, &HajimeWalkRosNode::motionCallback, this);
-    sub_imu_ = nh_.subscribe("/imu/data", 1000, &HajimeWalkRosNode::imuCallback, this);
-    joint_pub_ = nh_.advertise<std_msgs::Float64MultiArray>("/joint_group_position_controller/command", 1);
+    sub_walk_ = nh_.subscribe("hajime_walk/walk", 10, &HajimeWalkRosNode::walkCallback, this);
+    sub_cancel_ = nh_.subscribe("hajime_walk/cancel", 10, &HajimeWalkRosNode::cancelCallback, this);
+    sub_imu_ = nh_.subscribe("imu/data", 1000, &HajimeWalkRosNode::imuCallback, this);
+    joint_pub_ = nh_.advertise<std_msgs::Float64MultiArray>("joint_group_position_controller/command", 1);
+    action_server_.start();
   };
 
   void update()
   {
-    if (!motion_flag_)
+    if (!has_active_motion_goal_)
     {
       cntr_->setCommand(cmd_type_, walk_cmd_.num_step, walk_cmd_.stride_th, walk_cmd_.stride_x, walk_cmd_.period,
                         walk_cmd_.stride_y);
     }
+    else
+    {
+      if (prev_moving_state_ == hr46::STATE_MOTION && cntr_->getCurrentMovingState() == hr46::STATE_STOP)
+      {
+        ROS_INFO_STREAM("finished motion " << goal_handle_.getGoal()->motion_id);
+        hajime_walk_msgs::HajimeMotionResult result;
+        goal_handle_.setSucceeded(result);
+        has_active_motion_goal_ = false;
+      }
+      prev_moving_state_ = cntr_->getCurrentMovingState();
+    }
+
     cntr_->cntr();
 
     std_msgs::Float64MultiArray multi_rad;
@@ -52,28 +70,63 @@ private:
   ros::Subscriber sub_motion_;
   ros::Subscriber sub_imu_;
   ros::Publisher joint_pub_;
-  hr46::CntrUniquePtr cntr_;
 
-  bool motion_flag_;
+  actionlib::ActionServer<hajime_walk_msgs::HajimeMotionAction> action_server_;
+  actionlib::ActionServer<hajime_walk_msgs::HajimeMotionAction>::GoalHandle goal_handle_;
+  bool has_active_motion_goal_;
+
+  hr46::CntrUniquePtr cntr_;
+  short prev_moving_state_;
+
   hajime_walk_msgs::HajimeWalk walk_cmd_;
   char cmd_type_;
 
-  void motionCallback(const hajime_walk_msgs::HajimeMotion::ConstPtr& msg)
+  void
+  motionCancelCallback(const actionlib::ActionServer<hajime_walk_msgs::HajimeMotionAction>::GoalHandle& goal_handle)
   {
-    motion_flag_ = true;
-    cntr_->setCommand('M', msg->motion_id, 0, 0, msg->num_repeat, 0);
+    if (goal_handle == goal_handle_)
+    {
+      hajime_walk_msgs::HajimeMotionResult result;
+      goal_handle_.setCanceled(result, "motion canceled");
+      has_active_motion_goal_ = false;
+    }
   };
+
+  void motionGoalCallback(actionlib::ActionServer<hajime_walk_msgs::HajimeMotionAction>::GoalHandle goal_handle)
+  {
+    if (has_active_motion_goal_)
+    {
+      hajime_walk_msgs::HajimeMotionResult result;
+      goal_handle.setRejected(result, "already running a motion");
+      ROS_ERROR_STREAM("rejected motion request: already running a motion");
+      return;
+    }
+    else if (cntr_->getCurrentMovingState() != hr46::STATE_STOP)
+    {
+      hajime_walk_msgs::HajimeMotionResult result;
+      goal_handle.setRejected(result, "must be stationary to start a motion");
+      ROS_ERROR_STREAM("rejected motion request: must be stationary to start a motion");
+      return;
+    }
+
+    goal_handle_ = goal_handle;
+    has_active_motion_goal_ = true;
+    goal_handle_.setAccepted();
+    ROS_INFO_STREAM("executing motion " << goal_handle.getGoal()->motion_id);
+    cntr_->setCommand('M', goal_handle.getGoal()->motion_id, 0, 0, goal_handle.getGoal()->num_repeat, 0);
+  };
+
   void cancelCallback(const std_msgs::Empty::ConstPtr& /* msg */)
   {
-    motion_flag_ = false;
     cmd_type_ = 'C';
   };
+
   void walkCallback(const hajime_walk_msgs::HajimeWalk::ConstPtr& msg)
   {
-    motion_flag_ = false;
     cmd_type_ = 'A';
     walk_cmd_ = *msg;
   };
+
   void imuCallback(const sensor_msgs::Imu::ConstPtr& msg)
   {
     tf2::Quaternion q(msg->orientation.x, msg->orientation.y, msg->orientation.z, msg->orientation.w);

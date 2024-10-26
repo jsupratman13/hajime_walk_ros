@@ -10,6 +10,7 @@ find_package(
              sensor_msgs
              hajime_walk_msgs
              tf2
+             actionlib
 )
 
 catkin_package(
@@ -21,6 +22,7 @@ catkin_package(
     sensor_msgs
     hajime_walk_msgs
     tf2
+    actionlib
 )
 
 include_directories(include/${PROJECT_NAME} ${catkin_INCLUDE_DIRS})
