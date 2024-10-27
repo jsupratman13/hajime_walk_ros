@@ -1,0 +1,33 @@
+axes_linear:
+  x: 7
+  y: 6
+scale_linear:
+  x: 10
+  y: 12
+buttons_angular:
+  left: 4
+  right: 5
+scale_angular: 10
+button_enable_step_in_place: 9
+button_disable_step_in_place: 9
+button_motions:
+  left_kick:
+    axis: 2
+    axis_threshold: -1.0
+    motion_id: 31
+  right_kick:
+    axis: 5
+    axis_threshold: -1.0
+    motion_id: 30
+  front_stand_up:
+    button: 3
+    motion_id: 3
+  back_stand_up:
+    button: 0
+    motion_id: 4
+  side_stand_up_left:
+    button: 2
+    motion_id: 6
+  side_stand_up_right:
+    button: 1
+    motion_id: 7

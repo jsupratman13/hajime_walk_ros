@@ -29,64 +29,77 @@ from hajime_walk_msgs.msg import HajimeWalk
 
 class HajimeWalkJoy(object):
     def __init__(self) -> None:
+        self.__walk_linear = rospy.get_param('axes_linear')
+        self.__walk_scale = rospy.get_param('scale_linear')
+        self.__walk_angular = rospy.get_param('buttons_angular')
+        self.__walk_angular_scale = rospy.get_param('scale_angular')
+
+        self.__start_step_in_place = rospy.get_param('button_enable_step_in_place')
+        self.__stop_step_in_place = rospy.get_param('button_disable_step_in_place')
+        self.__enable_step_in_place = False
+
+        self.__motions = {}
+        for key, value in rospy.get_param('button_motions').items():
+            self.__motions[key] = value
+
         rospy.Subscriber('joy', Joy, self._joy_callback, queue_size=1)
         self.__walk_pub = rospy.Publisher('hajime_walk/walk', HajimeWalk, queue_size=1)
         self.__cancel_pub = rospy.Publisher('hajime_walk/cancel', Empty, queue_size=1)
         self.__motion_client = SimpleActionClient('hajime_walk/motion', HajimeMotionAction)
-        self.__walk_test = 1
+
+        rospy.loginfo('Hajime Walk Joy is ready')
 
     def _joy_callback(self, joy_msg: Joy) -> None:
         # wait for motion to finish
         if self.__motion_client.get_state() == GoalStatus.ACTIVE:
             return
 
-        # walk test
-        if joy_msg.buttons[-2]:
-            self.__walk_test *= -1
-            if self.__walk_test == 1:
-                self.__cancel_pub.publish()
-        if self.__walk_test == -1:
+        # step in place
+        if joy_msg.buttons[self.__start_step_in_place] and not self.__enable_step_in_place:
+            self.__enable_step_in_place = True
+        elif joy_msg.buttons[self.__stop_step_in_place] and self.__enable_step_in_place:
+            self.__cancel_pub.publish()
+            self.__enable_step_in_place = False
+        if self.__enable_step_in_place:
             self.__walk_pub.publish(HajimeWalk())
             return
 
-        # Motion
-        if joy_msg.buttons[0] or joy_msg.buttons[1] or \
-                joy_msg.buttons[2] or joy_msg.buttons[3] or \
-                joy_msg.buttons[6] or joy_msg.buttons[7] or \
-                joy_msg.axes[2] < 0 or joy_msg.axes[5] < 0:
-            goal = HajimeMotionGoal()
-            self.__cancel_pub.publish()
-            if joy_msg.buttons[0]:
-                goal.motion_id = 4
-            elif joy_msg.buttons[1]:
-                goal.motion_id = 7
-            elif joy_msg.buttons[2]:
-                goal.motion_id = 3
-            elif joy_msg.buttons[3]:
-                goal.motion_id = 6
-            elif joy_msg.buttons[6] or joy_msg.axes[2] < 0:
-                goal.motion_id = 30
-            elif joy_msg.buttons[7] or joy_msg.axes[5] < 0:
-                goal.motion_id = 31
-            else:
-                return
-            self.__motion_client.send_goal(goal)
+        # motion
+        for name, params in self.__motions.items():
+            if 'button' in params:
+                if joy_msg.buttons[params['button']]:
+                    goal = HajimeMotionGoal()
+                    goal.motion_id = int(params['motion_id'])
+                    self.__motion_client.send_goal(goal)
+                    rospy.loginfo(f'execute motion {name}')
+                    return
+            elif 'axis' in params:
+                if joy_msg.axes[params['axis']] >= params['axis_threshold'] > 0 or \
+                        joy_msg.axes[params['axis']] <= params['axis_threshold'] < 0:
+                    goal = HajimeMotionGoal()
+                    goal.motion_id = int(params['motion_id'])
+                    self.__motion_client.send_goal(goal)
+                    rospy.loginfo(f'execute motion {name}')
+                    return
 
-        # Walk or cancel
-        if joy_msg.axes[-1] or joy_msg.axes[-2] or joy_msg.buttons[4] or joy_msg.buttons[5]:
+        # walk
+        if joy_msg.axes[self.__walk_linear['x']] or joy_msg.axes[self.__walk_linear['y']] or \
+                joy_msg.buttons[self.__walk_angular['left']] or joy_msg.buttons[self.__walk_angular['right']]:
             walk_msg = HajimeWalk()
-            walk_msg.stride_x = int(joy_msg.axes[-1]) * 10
-            walk_msg.stride_y = int(joy_msg.axes[-2]) * 12
-            if joy_msg.buttons[4] and not joy_msg.buttons[5]:
+            walk_msg.stride_x = int(joy_msg.axes[self.__walk_linear['x']]) * self.__walk_scale['x']
+            walk_msg.stride_y = int(joy_msg.axes[self.__walk_linear['y']]) * self.__walk_scale['y']
+            if joy_msg.buttons[self.__walk_angular['left']] and not joy_msg.buttons[self.__walk_angular['right']]:
                 dir = 1
-            elif joy_msg.buttons[5] and not joy_msg.buttons[4]:
+            elif joy_msg.buttons[self.__walk_angular['right']] and not joy_msg.buttons[self.__walk_angular['left']]:
                 dir = -1
             else:
                 dir = 0
-            walk_msg.stride_th = dir * 10
+            walk_msg.stride_th = dir * self.__walk_angular_scale
             self.__walk_pub.publish(walk_msg)
-        else:
-            self.__cancel_pub.publish()
+            return
+
+        # stop
+        self.__cancel_pub.publish()
 
 
 if __name__ == '__main__':
