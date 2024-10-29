@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<library path="src">
+  <class name="HajimeMotionCreator" type="rqt_hajime_motion_creator.hajime_motion_creator.HajimeMotionCreator" base_class_type="rqt_gui_py::Plugin">
+    <description>
+      GUI for creating motion to use in HajimeWalkROS.
+    </description>
+    <qtgui>
+      <group>
+        <label>Robot Tools</label>
+        <icon type="theme">folder</icon>
+        <statustip>Plugins related to robot tools.</statustip>
+      </group>
+      <label>Hajime Motion Creator</label>
+      <icon>resource/yoshi_egg.png</icon>
+      <statustip>
+        GUI for creating motion to use in HajimeWalkROS.
+      </statustip>
+    </qtgui>
+  </class>
+</library>
