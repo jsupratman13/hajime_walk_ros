@@ -8,17 +8,17 @@ buttons_angular:
   left: 4
   right: 5
 scale_angular: 10
-button_enable_continuous_mode: 9
-button_disable_continuous_mode: 9
+button_enable_continuous_mode: 7
+button_disable_continuous_mode: 6
 button_motions:
   left_kick:
     axis: 2
     axis_threshold: -1.0
-    motion_id: 31
+    motion_id: 33
   right_kick:
     axis: 5
     axis_threshold: -1.0
-    motion_id: 30
+    motion_id: 32
   front_stand_up:
     button: 3
     motion_id: 3
