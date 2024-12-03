@@ -34,9 +34,9 @@ class HajimeWalkJoy(object):
         self.__walk_angular = rospy.get_param('buttons_angular')
         self.__walk_angular_scale = rospy.get_param('scale_angular')
 
-        self.__start_step_in_place = rospy.get_param('button_enable_step_in_place')
-        self.__stop_step_in_place = rospy.get_param('button_disable_step_in_place')
-        self.__enable_step_in_place = False
+        self.__continuous_mode = rospy.get_param('button_enable_continuous_mode')
+        self.__discrete_mode = rospy.get_param('button_disable_continuous_mode')
+        self.__enable_continuous_mode = False
 
         self.__motions = {}
         for key, value in rospy.get_param('button_motions').items():
@@ -52,16 +52,6 @@ class HajimeWalkJoy(object):
     def _joy_callback(self, joy_msg: Joy) -> None:
         # wait for motion to finish
         if self.__motion_client.get_state() == GoalStatus.ACTIVE:
-            return
-
-        # step in place
-        if joy_msg.buttons[self.__start_step_in_place] and not self.__enable_step_in_place:
-            self.__enable_step_in_place = True
-        elif joy_msg.buttons[self.__stop_step_in_place] and self.__enable_step_in_place:
-            self.__cancel_pub.publish()
-            self.__enable_step_in_place = False
-        if self.__enable_step_in_place:
-            self.__walk_pub.publish(HajimeWalk())
             return
 
         # motion
@@ -82,6 +72,13 @@ class HajimeWalkJoy(object):
                     rospy.loginfo(f'execute motion {name}')
                     return
 
+        # enable/disable continuous mode
+        if joy_msg.buttons[self.__continuous_mode] and not self.__enable_continuous_mode:
+            self.__enable_continuous_mode = True
+        elif joy_msg.buttons[self.__discrete_mode] and self.__enable_continuous_mode:
+            self.__cancel_pub.publish()
+            self.__enable_continuous_mode = False
+
         # walk
         if joy_msg.axes[self.__walk_linear['x']] or joy_msg.axes[self.__walk_linear['y']] or \
                 joy_msg.buttons[self.__walk_angular['left']] or joy_msg.buttons[self.__walk_angular['right']]:
@@ -99,6 +96,9 @@ class HajimeWalkJoy(object):
             return
 
         # stop
+        if self.__enable_continuous_mode:
+            self.__walk_pub.publish(HajimeWalk())
+            return
         self.__cancel_pub.publish()
 
 

@@ -8,8 +8,8 @@ buttons_angular:
   left: 4
   right: 5
 scale_angular: 10
-button_enable_step_in_place: 9
-button_disable_step_in_place: 9
+button_enable_continuous_mode: 9
+button_disable_continuous_mode: 9
 button_motions:
   left_kick:
     axis: 2
